@@ -1,4 +1,6 @@
+// @ts-ignore
 import { createClient } from "@supabase/supabase-js";
+// @ts-ignore
 import dotenv from "dotenv";
 
 // ✅ Load environment variables BEFORE using process.env

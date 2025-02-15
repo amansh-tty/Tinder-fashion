@@ -4,7 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.supabase = void 0;
+// @ts-ignore
 const supabase_js_1 = require("@supabase/supabase-js");
+// @ts-ignore
 const dotenv_1 = __importDefault(require("dotenv"));
 // ✅ Load environment variables BEFORE using process.env
 dotenv_1.default.config();
