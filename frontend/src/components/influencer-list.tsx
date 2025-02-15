@@ -1,16 +1,31 @@
 import { useState, useEffect } from "react";
+import { client } from "../api/client"
+
 import { UserPlus, UserCheck } from "lucide-react";
 
-const influencers = [
-  { id: 1, name: "Emma Style", followers: "1.2M", image: "/profiles/mai.jpg" },
-  { id: 2, name: "Liam Fashion", followers: "890K", image: "/profiles/kamo.jpg" },
-  { id: 3, name: "Sophia Chic", followers: "2.5M", image: "/profiles/maki.jpg" },
-];
-
 export function InfluencerList() {
+  const [influencers, setInfluencers] = useState<{ id: number; name: string; followers: string; image: string }[]>([]);
   const [followedInfluencers, setFollowedInfluencers] = useState<number[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // ✅ Fetch Influencers from Backend
+    const fetchInfluencers = async () => {
+      try {
+        const response = await client.get("/influencers");
+        const data = response.data;
+        setInfluencers(data);
+          setLoading(false);
+        } catch (error: unknown) {
+          setError(`Failed to load influencers: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          setLoading(false);
+        }
+      };
+  
+      fetchInfluencers();
+
+    // ✅ Load followed influencers from localStorage
     const storedFollowedInfluencers = localStorage.getItem("followedInfluencers");
     if (storedFollowedInfluencers) {
       setFollowedInfluencers(JSON.parse(storedFollowedInfluencers));
@@ -21,9 +36,13 @@ export function InfluencerList() {
     const newFollowedInfluencers = followedInfluencers.includes(id)
       ? followedInfluencers.filter((influencerId) => influencerId !== id)
       : [...followedInfluencers, id];
+      
     setFollowedInfluencers(newFollowedInfluencers);
     localStorage.setItem("followedInfluencers", JSON.stringify(newFollowedInfluencers));
   };
+
+  if (loading) return <p className="text-center text-gray-600">Loading influencers...</p>;
+  if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
     <div className="px-4 py-6">
@@ -48,10 +67,10 @@ export function InfluencerList() {
                 <button
                   onClick={() => toggleFollow(influencer.id)}
                   className={`flex items-center gap-1 px-3 py-1 rounded-lg transition-all text-sm ${
-                      followedInfluencers.includes(influencer.id)
-                        ? "bg-green-500 text-white hover:bg-green-600"
-                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                    }`}
+                    followedInfluencers.includes(influencer.id)
+                      ? "bg-green-500 text-white hover:bg-green-600"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
                 >
                   {followedInfluencers.includes(influencer.id) ? (
                     <>

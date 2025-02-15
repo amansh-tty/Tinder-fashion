@@ -1,9 +1,9 @@
 import { InfluencerProfile } from '@/components/influencer-profile'
 
-export default function InfluencerPage({ params }: { params: { id: string } }) {
+export default function InfluencerPage( ) {
   return (
     <div>
-      <InfluencerProfile id={params.id} />
+      <InfluencerProfile />
     </div>
   )
 }

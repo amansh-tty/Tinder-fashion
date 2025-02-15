@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { motion, type PanInfo } from "framer-motion";
+import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, MapPin, Heart, Image as ImageIcon } from "lucide-react";
-import { useLikedItems } from "../context/LikedItemsContext";
+import { useUser } from "@clerk/clerk-react";
+import { client } from "../api/client";
 
 interface Product {
-  id: number;
+  product_id: number;
   name: string;
   price: number;
   image?: string;
@@ -15,37 +16,76 @@ export function ProductSwiper() {
   const [products, setProducts] = useState<Product[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [exitX, setExitX] = useState(0);
-  const { likedItems, toggleLike } = useLikedItems();
+  const [swipedProducts, setSwipedProducts] = useState(new Set<number>());
+  const { isSignedIn, user } = useUser();
   const [loading, setLoading] = useState(true);
+  // const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/products")
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchProducts = async () => {
+      try {
+        const { data } = await client.get("/products");
         setProducts(data);
+      } catch (error) {
+        console.error("❌ Error fetching products:", error);
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => console.error("Error fetching products:", err));
+      }
+    };
+
+    fetchProducts();
   }, []);
 
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (info.offset.x < -100) {
-      setExitX(-250);
-      setTimeout(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % products.length);
-        setExitX(0);
-      }, 300);
-    } else if (info.offset.x > 100) {
-      setExitX(250);
-      setTimeout(() => {
-        setCurrentIndex((prevIndex) => (prevIndex - 1 + products.length) % products.length);
-        setExitX(0);
-      }, 300);
+  const handleLikeProduct = async (productId: number) => {
+    if (!isSignedIn) {
+      console.warn("⚠️ User is not signed in!");
+      return;
+    }
+
+    // if (swipedProducts.has(productId)) {
+    //   console.warn("⚠️ Already swiped this product.");
+    //   return;
+    // }
+
+    try {
+      console.log({productId})
+      const response = await client.post("/liked-products", {
+        user_id: user?.id, // Send Clerk user ID
+        product_id: productId,
+      });
+
+      console.log("✅ Liked Product Response:", response.data);
+      setSwipedProducts((prev) => new Set(prev).add(productId));
+    } catch (error) {
+      console.error("❌ Error liking product:", error);
     }
   };
 
-  if (loading) return <p>Loading products...</p>;
-  if (!products.length) return <p>No products available.</p>;
+  const handleNextProduct = (liked: boolean) => {
+    if (currentIndex >= products.length - 1) {
+      console.warn("⚠️ No more products left.");
+      return;
+    }
+
+    const currentProductId = products[currentIndex]?.product_id;
+
+    if (!swipedProducts.has(currentProductId)) {
+      setSwipedProducts((prev) => new Set(prev).add(currentProductId));
+    }
+
+    // if (liked) {
+    //   handleLikeProduct(currentProductId);
+    // }
+
+    setExitX(liked ? 250 : -250);
+    setTimeout(() => {
+      setCurrentIndex((prevIndex) => prevIndex + 1);
+      setExitX(0);
+    }, 300);
+  };
+
+  if (loading) return <p className="text-center">Loading products...</p>;
+  if (currentIndex >= products.length) return <p className="text-center">All products viewed. No more items.</p>;
 
   const currentProduct = products[currentIndex];
 
@@ -57,9 +97,6 @@ export function ProductSwiper() {
         animate={{ x: exitX, opacity: 1 }}
         exit={{ x: -300, opacity: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        onDragEnd={handleDragEnd}
         className="bg-white rounded-xl shadow-lg overflow-hidden"
       >
         {currentProduct.image ? (
@@ -80,7 +117,7 @@ export function ProductSwiper() {
               <MapPin size={16} className="mr-1" />
               Find in stores
             </a>
-            <button onClick={() => toggleLike(currentProduct.id)} className={`hover:text-red-600 ${likedItems.includes(currentProduct.id) ? "text-red-500" : "text-gray-400"}`}>
+            <button onClick={() => handleLikeProduct(currentProduct.product_id)} className="text-gray-400 hover:text-red-600">
               <Heart size={24} />
             </button>
           </div>
@@ -88,13 +125,14 @@ export function ProductSwiper() {
       </motion.div>
 
       <button
-        onClick={() => setCurrentIndex((prevIndex) => (prevIndex - 1 + products.length) % products.length)}
+        onClick={() => handleNextProduct(false)}
         className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md"
       >
         <ChevronLeft size={24} />
       </button>
+
       <button
-        onClick={() => setCurrentIndex((prevIndex) => (prevIndex + 1) % products.length)}
+        onClick={() => handleNextProduct(true)}
         className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md"
       >
         <ChevronRight size={24} />

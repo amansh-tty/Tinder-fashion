@@ -34,7 +34,7 @@ export function Navbar() {
         {menuOpen && (
           <div className="md:hidden bg-white shadow-md rounded-lg mt-2">
             <NavItem href="/" text="Discover" isMobile />
-            <NavItem href="/liked" text="Liked" icon={<Heart size={16} />} isMobile />
+            <NavItem href="/liked-products" text="Liked" icon={<Heart size={16} />} isMobile />
             <NavItem href="/stores" text="Stores" icon={<MapPin size={16} />} isMobile />
             <NavItem href="/influencers" text="Influencers" icon={<Users size={16} />} isMobile />
             <NavItem href="/profile" text="Profile" icon={<User size={16} />} isMobile />
@@ -43,12 +43,7 @@ export function Navbar() {
       </nav>
 
       {/* Page Content with margin below the navbar */}
-      <div className="mt-20 px-4">
-        <h1 className="text-2xl font-bold">Welcome to FashionSwipe</h1>
-        <p className="text-gray-600 mt-2">
-          Discover trending fashion, favorite stores, and top influencers!
-        </p>
-      </div>
+    
     </>
   );
 }

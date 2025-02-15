@@ -1,53 +1,64 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
+import { supabase } from "./supabase/supabaseClient";
+import { useUser } from "@clerk/clerk-react"; // Clerk auth
 
 export function UserProfile() {
-  const [likedItems, setLikedItems] = useState<number[]>([])
-  const [followedInfluencers, setFollowedInfluencers] = useState<number[]>([])
+  const [likedItems, setLikedItems] = useState<number[]>([]);
+  // const [followedInfluencers, setFollowedInfluencers] = useState<number[]>([]);
+  const { user } = useUser(); // Get Clerk user
 
   useEffect(() => {
-    const storedLikedItems = localStorage.getItem("likedItems")
-    const storedFollowedInfluencers = localStorage.getItem("followedInfluencers")
+    if (!user) return;
 
-    if (storedLikedItems) {
-      setLikedItems(JSON.parse(storedLikedItems))
-    }
-    if (storedFollowedInfluencers) {
-      setFollowedInfluencers(JSON.parse(storedFollowedInfluencers))
-    }
-  }, [])
+    const fetchLikedProducts = async () => {
+      // Fetch user ID from 'users' table
+      const { data: userData, error: userError } = await supabase
+        .from("users")
+        .select("id")
+        .eq("clerk_id", user.id)
+        .single();
+
+      if (userError || !userData) {
+        console.error("Error fetching user ID:", userError?.message);
+        return;
+      }
+
+      const userId = userData.id;
+
+      // Fetch liked product IDs from 'liked_products' table
+      const { data: likedData, error: likedError } = await supabase
+        .from("liked_products")
+        .select("product_id")
+        .eq("user_id", userId);
+
+      if (likedError) {
+        console.warn("Error fetching liked products:", likedError.message);
+        return;
+      }
+
+      setLikedItems(likedData.map((item) => item.product_id));
+    };
+
+    fetchLikedProducts();
+  }, [user]);
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Your Stats</h2>
-        <p>Liked Items: {likedItems.length}</p>
-        <p>Followed Influencers: {followedInfluencers.length}</p>
-      </div>
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Quick Links</h2>
-        <ul className="space-y-2">
-          <li>
-            <a href="/liked" className="text-blue-500 hover:underline">
-              View Liked Items
-            </a>
-          </li>
-          <li>
-            <a href="/influencers" className="text-blue-500 hover:underline">
-              Explore Influencers
-            </a>
-          </li>
-          <li>
-            <a href="/stores" className="text-blue-500 hover:underline">
-              Find Nearby Stores
-            </a>
-          </li>
-        </ul>
-      </div>
-      <div>
-        <h2 className="text-xl font-semibold mb-2">Account Settings</h2>
-        <p className="text-gray-600">(Account settings functionality would be implemented here in a real app)</p>
+      <h2 className="text-xl font-semibold mb-2">Your Stats</h2>
+      <p>Liked Items: {likedItems.length}</p>
+
+      {/* Render liked products horizontally */}
+      <div className="mt-4 flex overflow-x-auto space-x-4 p-2">
+        {likedItems.length > 0 ? (
+          likedItems.map((productId) => (
+            <div key={productId} className="p-2 bg-gray-100 rounded-lg min-w-[100px] text-center">
+              🛍️ Product {productId}
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500">No liked products yet.</p>
+        )}
       </div>
     </div>
-  )
+  );
 }
-
