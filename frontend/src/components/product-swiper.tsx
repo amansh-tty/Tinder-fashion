@@ -80,50 +80,60 @@ export function ProductSwiper() {
   const currentProduct = products[currentIndex];
 
   return (
-    <div className="relative w-full max-w-md mx-auto mt-6">
-      <motion.div
-        key={currentIndex}
-        initial={{ x: 0, opacity: 1 }}
-        animate={{ x: exitX, opacity: 1 }}
-        exit={{ x: exitX > 0 ? 300 : -300, opacity: 0 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className="bg-white rounded-xl shadow-lg overflow-hidden"
-      >
-        {currentProduct.image ? (
-          <img src={currentProduct.image} alt={currentProduct.name} className="w-full h-64 object-cover" />
-        ) : (
-          <div className="w-full h-64 bg-gray-100 flex items-center justify-center">
-            <ImageIcon size={48} className="text-gray-400" />
-          </div>
-        )}
+    <div className="relative w-full max-w-md mx-auto mt-2">
+     <motion.div
+  key={currentIndex}
+  initial={{ x: 0, opacity: 1 }}
+  animate={{ x: exitX, opacity: 1 }}
+  exit={{ x: exitX > 0 ? 300 : -300, opacity: 0 }}
+  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+  className="bg-white rounded-xl shadow-lg overflow-hidden w-full max-w-sm mx-auto flex flex-col items-center p-4"
+  style={{ height: "85vh" }} // Slightly taller container for spacing
+>
+  {currentProduct.image ? (
+    <img
+      src={currentProduct.image}
+      alt={currentProduct.name}
+      className="w-full h-[60vh] object-contain" // Ensures full image fits without cropping
+    />
+  ) : (
+    <div className="w-full h-[60vh] bg-gray-100 flex items-center justify-center">
+      <ImageIcon size={48} className="text-gray-400" />
+    </div>
+  )}
 
-        <div className="p-4">
-          <h2 className="text-xl font-semibold">{currentProduct.name}</h2>
-          <p className="text-sm text-gray-500">Brand: {currentProduct.brand}</p>
+  <div className="w-full mt-4 px-4 text-center">
+    <h2 className="text-lg font-semibold text-gray-900 leading-tight">{currentProduct.name}</h2>
+    <p className="text-sm text-gray-500">Brand: {currentProduct.brand}</p>
 
-          <div className="flex items-center gap-2 mt-2">
-            {currentProduct.discounted_price && currentProduct.discounted_price < currentProduct.price ? (
-              <>
-                <p className="text-lg font-bold text-red-500">{formatPrice(currentProduct.discounted_price)}</p>
-                <p className="text-sm line-through text-gray-500">{formatPrice(currentProduct.price)}</p>
-              </>
-            ) : (
-              <p className="text-lg font-bold">{formatPrice(currentProduct.price)}</p>
-            )}
-          </div>
+    <div className="flex items-center justify-center gap-2 mt-2">
+      {currentProduct.discounted_price && currentProduct.discounted_price < currentProduct.price ? (
+        <>
+          <p className="text-lg font-bold text-red-500">{formatPrice(currentProduct.discounted_price)}</p>
+          <p className="text-sm line-through text-gray-500">{formatPrice(currentProduct.price)}</p>
+        </>
+      ) : (
+        <p className="text-lg font-bold">{formatPrice(currentProduct.price)}</p>
+      )}
+    </div>
+  </div>
+</motion.div>
 
-          {/* {currentProduct.influencer && (
-            <p className="text-sm text-gray-500 mt-1">Curated by {currentProduct.influencer}</p>
-          )}
+<button
+  onClick={() => handleLikeAndNextProduct(false)}
+  className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md"
+>
+  <ChevronLeft size={24} />
+</button>
 
-          <div className="flex justify-between items-center mt-3">
-            <a href="/stores" className="flex items-center text-blue-500 hover:underline">
-              <MapPin size={16} className="mr-1" />
-              Find in stores
-            </a>
-          </div> */}
-        </div>
-      </motion.div>
+<button
+  onClick={() => handleLikeAndNextProduct(true)}
+  className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md"
+>
+  <ChevronRight size={24} />
+</button>
+
+
 
       <button
         onClick={() => handleLikeAndNextProduct(false)}

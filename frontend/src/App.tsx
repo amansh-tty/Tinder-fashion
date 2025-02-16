@@ -55,9 +55,9 @@ function App() {
 
         {/* If user is signed in, sync their data and show the app */}
         <SignedIn>
-          <div className="flex justify-end p-4">
+          {/* <div className="flex justify-end p-4">
             <UserButton />
-          </div>
+          </div> */}
 
           <Routes>
             <Route path="/" element={<ProductSwiper />} />
