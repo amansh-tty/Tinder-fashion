@@ -30,14 +30,14 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
 const supabase = (0, supabase_js_1.createClient)(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 // ✅ Enable CORS
 app.use((0, cors_1.default)({
-    origin: "http://localhost:5173", // Allow frontend access
+    origin: "*", // Allow frontend access
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }));
 // ✅ Middleware
 app.use(express_1.default.json());
 // ✅ Test Route
-app.get("/", (req, res) => {
+app.get("/api/health", (req, res) => {
     res.send("Server is running! 🚀");
 });
 app.post("/api/liked-products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
