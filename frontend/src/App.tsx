@@ -12,8 +12,8 @@ import { UserProfile } from "./components/user-profile";
 import { LikedItemsProvider } from "./context/LikedItemsContext";
 import { InfluencerList } from "./components/influencer-list";
 import { UserResource } from "@clerk/types";
-import Recommendations from "../src/components/Recommentations"
-import  FashionQuiz  from "../src/components/FashionQuiz"
+// import Recommendations from "../src/components/Recommentations"
+// import  FashionQuiz  from "../src/components/FashionQuiz"
 // import TrendingProducts  from "../src/components/TrendingProducts";
 import BrandGrid from "./components/Brand-grid";
 
@@ -69,8 +69,8 @@ function App() {
             <Route path="/influencers/:id" element={<InfluencerProfile />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/stores/:id" element={<StoreDetails />} />
-            <Route path="/recommendations" element={<Recommendations allProducts={[]} />} />
-            <Route path="/fashion-quiz" element={<FashionQuiz />} />
+            {/* <Route path="/recommendations" element={<Recommendations allProducts={[]} />} /> */}
+            {/* <Route path="/fashion-quiz" element={<FashionQuiz />} /> */}
             {/* <Route path="/trending" element={<TrendingProducts allProducts={[]} />} /> */}
           </Routes>
         </SignedIn>
