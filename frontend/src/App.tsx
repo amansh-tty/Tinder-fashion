@@ -14,7 +14,7 @@ import { InfluencerList } from "./components/influencer-list";
 import { UserResource } from "@clerk/types";
 import Recommendations from "../src/components/Recommentations"
 import  FashionQuiz  from "../src/components/FashionQuiz"
-import TrendingProducts  from "../src/components/TrendingProducts";
+// import TrendingProducts  from "../src/components/TrendingProducts";
 import BrandGrid from "./components/Brand-grid";
 
 const syncUserToBackend = async (clerkUser: UserResource) => {
@@ -71,7 +71,7 @@ function App() {
             <Route path="/stores/:id" element={<StoreDetails />} />
             <Route path="/recommendations" element={<Recommendations allProducts={[]} />} />
             <Route path="/fashion-quiz" element={<FashionQuiz />} />
-            <Route path="/trending" element={<TrendingProducts allProducts={[]} />} />
+            {/* <Route path="/trending" element={<TrendingProducts allProducts={[]} />} /> */}
           </Routes>
         </SignedIn>
       </div>
