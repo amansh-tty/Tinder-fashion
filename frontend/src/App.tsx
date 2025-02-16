@@ -1,4 +1,4 @@
-import { client } from "./api/client"
+import { client } from "./api/client";
 import { useEffect } from "react";
 import { SignedIn, SignedOut, SignInButton, useUser } from "@clerk/clerk-react";
 import { Routes, Route } from "react-router-dom";
@@ -12,6 +12,10 @@ import { UserProfile } from "./components/user-profile";
 import { LikedItemsProvider } from "./context/LikedItemsContext";
 import { InfluencerList } from "./components/influencer-list";
 import { UserResource } from "@clerk/types";
+import Recommendations from "../src/components/Recommentations"
+import  FashionQuiz  from "../src/components/FashionQuiz"
+import TrendingProducts  from "../src/components/TrendingProducts";
+import BrandGrid from "./components/Brand-grid";
 
 const syncUserToBackend = async (clerkUser: UserResource) => {
   if (!clerkUser) return;
@@ -55,18 +59,19 @@ function App() {
 
         {/* If user is signed in, sync their data and show the app */}
         <SignedIn>
-          {/* <div className="flex justify-end p-4">
-            <UserButton />
-          </div> */}
-
           <Routes>
             <Route path="/" element={<ProductSwiper />} />
             <Route path="/liked-products" element={<LikedItems />} />
+            <Route path="/brand-grid" element={<BrandGrid />} />
+
             <Route path="/stores" element={<StoreList />} />
             <Route path="/influencers" element={<InfluencerList />} />
             <Route path="/influencers/:id" element={<InfluencerProfile />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/stores/:id" element={<StoreDetails />} />
+            <Route path="/recommendations" element={<Recommendations allProducts={[]} />} />
+            <Route path="/fashion-quiz" element={<FashionQuiz />} />
+            <Route path="/trending" element={<TrendingProducts allProducts={[]} />} />
           </Routes>
         </SignedIn>
       </div>

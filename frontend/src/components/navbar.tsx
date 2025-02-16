@@ -26,7 +26,10 @@ export function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-6">
             <NavItem href="/" text="Discover" />
+
             <NavItem href="/liked-products" text="Liked" icon={<Heart size={16} />} />
+            <NavItem href="/brand-grid" text="Brands" />
+
             {/* <NavItem href="/stores" text="Stores" icon={<MapPin size={16} />} /> */}
             {/* <NavItem href="/influencers" text="Influencers" icon={<Users size={16} />} /> */}
             <NavItem href="/profile" text="Profile" icon={<User size={16} />} />
