@@ -29,7 +29,7 @@ const supabase = createClient(
 // ✅ Enable CORS
 app.use(
   cors({
-    origin: "http://localhost:5173", // Allow frontend access
+    origin: "*", // Allow frontend access
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
   })
@@ -39,7 +39,7 @@ app.use(
 app.use(express.json());
 
 // ✅ Test Route
-app.get("/", (req, res) => {
+app.get("/api/health", (req, res) => {
   res.send("Server is running! 🚀");
 });
 app.post("/api/liked-products", async (req, res) => {
