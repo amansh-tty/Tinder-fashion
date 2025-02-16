@@ -1,6 +1,6 @@
 import { client } from "./api/client"
 import { useEffect } from "react";
-import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignInButton, useUser } from "@clerk/clerk-react";
 import { Routes, Route } from "react-router-dom";
 import { StoreList } from "./components/store-list";
 import { ProductSwiper } from "./components/product-swiper";
