@@ -14,20 +14,20 @@ export function LikedItems() {
     const fetchLikedProducts = async () => {
       try {
         const userId = user.id;
-        
+
         // Check if Clerk's userId has 'user_' prefix
         // if (userId.startsWith("user_")) {
         //   userId = userId.replace("user_", "");
         // }
 
-        console.log("Fetching liked products for userId:", userId);
+        // console.log("Fetching liked products for userId:", userId);
 
         const { data } = await client.get(`/liked-products`, {
           params: { userId },
           // body: {userId}
         });
 
-        console.log("Fetched Liked Products:", data);
+        // console.log("Fetched Liked Products:", data);
 
         if (!Array.isArray(data)) {
           setError("Invalid response from server.");
@@ -35,29 +35,45 @@ export function LikedItems() {
         }
 
         setLikedProducts(data);
-      } catch (error: any) {
-        console.error("Error fetching liked products:", error.response?.data || error.message);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Error fetching liked products:",error );
+        } else {
+          console.error("Error fetching liked products:", error);
+        }
         setError("Failed to load liked products.");
       }
     };
 
     fetchLikedProducts();
-  }, [user]);
+  }, []);
 
   const toggleLike = async (productId: number) => {
     if (!user) return;
-    setLikedProducts((prev) => prev.filter((p) => p.product_id !== productId));
+
 
     try {
-      let userId = user.id;
-      if (userId.startsWith("user_")) {
-        userId = userId.replace("user_", "");
-      }
+      const userId = user.id;
+      // if (userId.startsWith("user_")) {
+      //   userId = userId.replace("user_", "");
+      // }
+      console.log('userid, prodid', userId, productId)
+      const deletePayloadParams = new URLSearchParams()
+      deletePayloadParams.append('userId', userId)
+      if (productId) {
 
-      await client.post(`/unlike-product`, {
-        userId,
-        productId,
-      });
+        console.log(typeof productId)
+        deletePayloadParams.append('productId', productId.toString())
+
+      }
+      const deletePayload = {
+        params: deletePayloadParams
+      }
+      await client.delete(`/unlike-product`,
+        deletePayload
+      );
+
+      setLikedProducts((prev) => prev.filter((p) => p.product_id !== productId));
     } catch (error) {
       console.error("Error unliking product:", error);
     }
@@ -72,9 +88,9 @@ export function LikedItems() {
         <p className="text-gray-500">No liked products yet.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {likedProducts.map(({ products }) => (
+          {likedProducts.map(({ products }, index) => (
             <div
-              key={products.id}
+              key={products.id || index} // Use `products.id` if available, otherwise use `index`
               className="bg-white rounded-xl shadow-lg p-4 border flex flex-col items-center"
             >
               <img
@@ -83,7 +99,7 @@ export function LikedItems() {
                 className="w-40 h-40 object-cover mb-2 rounded-md"
               />
               <h2 className="text-lg font-semibold">{products.name}</h2>
-              <p className="text-gray-600">${products.price.toFixed(2)}</p>
+              <p className="text-gray-600">Rs. {products.price.toFixed(2)}</p>
               <a
                 href={products.link}
                 target="_blank"
@@ -93,13 +109,15 @@ export function LikedItems() {
                 View Product
               </a>
               <button
-                onClick={() => toggleLike(products.id)}
+                onClick={() => toggleLike(products.product_id)}
                 className="mt-2 text-red-500 flex items-center"
               >
                 <X size={20} /> Remove
               </button>
             </div>
           ))}
+
+
         </div>
       )}
     </div>

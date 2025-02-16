@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Heart, MapPin, Users, User, Menu } from "lucide-react";
+import { Heart, User, Menu } from "lucide-react";
 
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -20,12 +20,15 @@ export function Navbar() {
             <Menu size={24} />
           </button>
 
+          {/* failed ot retrieve rows from table
+          invalid input syntax for type integer */}
+
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-6">
             <NavItem href="/" text="Discover" />
-            <NavItem href="/liked" text="Liked" icon={<Heart size={16} />} />
-            <NavItem href="/stores" text="Stores" icon={<MapPin size={16} />} />
-            <NavItem href="/influencers" text="Influencers" icon={<Users size={16} />} />
+            <NavItem href="/liked-products" text="Liked" icon={<Heart size={16} />} />
+            {/* <NavItem href="/stores" text="Stores" icon={<MapPin size={16} />} /> */}
+            {/* <NavItem href="/influencers" text="Influencers" icon={<Users size={16} />} /> */}
             <NavItem href="/profile" text="Profile" icon={<User size={16} />} />
           </div>
         </div>
@@ -35,8 +38,8 @@ export function Navbar() {
           <div className="md:hidden bg-white shadow-md rounded-lg mt-2">
             <NavItem href="/" text="Discover" isMobile />
             <NavItem href="/liked-products" text="Liked" icon={<Heart size={16} />} isMobile />
-            <NavItem href="/stores" text="Stores" icon={<MapPin size={16} />} isMobile />
-            <NavItem href="/influencers" text="Influencers" icon={<Users size={16} />} isMobile />
+            {/* <NavItem href="/stores" text="Stores" icon={<MapPin size={16} />} isMobile /> */}
+            {/* <NavItem href="/influencers" text="Influencers" icon={<Users size={16} />} isMobile /> */}
             <NavItem href="/profile" text="Profile" icon={<User size={16} />} isMobile />
           </div>
         )}

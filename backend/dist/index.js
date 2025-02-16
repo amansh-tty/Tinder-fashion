@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const supabase_js_1 = require("@supabase/supabase-js");
 const dotenv_1 = __importDefault(require("dotenv"));
+const uuid_1 = require("uuid");
 // ✅ Load environment variables
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -44,13 +45,13 @@ app.post("/api/liked-products", (req, res) => __awaiter(void 0, void 0, void 0, 
         const { product_id, user_id } = req.body;
         const { data, error } = yield supabase
             .from("liked_products")
-            .insert([{ product_id: product_id, user_id: user_id }])
+            .insert([{ product_id: product_id, user_id: user_id, liked_id: (0, uuid_1.v4)() }])
             .select();
-        console.log('dat >>', data, error);
+        console.log("dat >>", data, error);
         res.status(200).json({ message: "Product liked!" });
     }
     catch (err) {
-        console.log('error while inserting product>>', err);
+        console.log("error while inserting product>>", err);
     }
 }));
 // ✅ check user is present in Supabase
@@ -129,6 +130,23 @@ app.get("/api/liked-products", (req, res) => __awaiter(void 0, void 0, void 0, f
         res
             .status(500)
             .json({ error: err.message || "Failed to fetch liked products" });
+    }
+}));
+app.delete("/api/unlike-product", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // const productId = req.params.id;
+        const userId = req.query.userId;
+        const productId = req.query.productId;
+        // Remove product from the liked list
+        const { error } = yield supabase
+            .from("liked_products")
+            .delete()
+            .eq("user_id", userId)
+            .eq("product_id", productId);
+        res.json({ success: true });
+    }
+    catch (error) {
+        console.log('error while delting >>', error);
     }
 }));
 app.get("/api/influencers", (req, res) => __awaiter(void 0, void 0, void 0, function* () {

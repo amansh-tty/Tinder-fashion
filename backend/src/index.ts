@@ -4,6 +4,8 @@ import cors from "cors";
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 import { clerkClient } from "@clerk/clerk-sdk-node"; // Ensure Clerk SDK is installed
+import { v4 as uuidv4, v6 as uuidv6 } from 'uuid';
+
 import User from "./models/User";
 
 // ✅ Load environment variables
@@ -42,18 +44,17 @@ app.get("/", (req, res) => {
 });
 app.post("/api/liked-products", async (req, res) => {
   try {
-   const { product_id, user_id } = req.body;
+    const { product_id, user_id } = req.body;
 
-  const { data, error } = await supabase
-    .from("liked_products")
-    .insert([{ product_id: product_id, user_id: user_id }])
-    .select();
-  console.log('dat >>', data,error)
-  res.status(200).json({ message: "Product liked!" }); 
+    const { data, error } = await supabase
+      .from("liked_products")
+      .insert([{ product_id: product_id, user_id: user_id,liked_id:uuidv4() }])
+      .select();
+    console.log("dat >>", data, error);
+    res.status(200).json({ message: "Product liked!" });
   } catch (err) {
-   console.log('error while inserting product>>', err) 
+    console.log("error while inserting product>>", err);
   }
-  
 });
 
 // ✅ check user is present in Supabase
@@ -140,6 +141,27 @@ app.get("/api/liked-products", async (req: Request, res: Response) => {
       .json({ error: err.message || "Failed to fetch liked products" });
   }
 });
+
+app.delete("/api/unlike-product", async (req, res) => {
+  try {
+    // const productId = req.params.id;
+    const userId = req.query.userId;
+    const productId = req.query.productId;
+    // Remove product from the liked list
+
+    
+    const { error } = await supabase
+      .from("liked_products")
+      .delete()
+      .eq("user_id", userId)
+      .eq("product_id", productId);
+
+    res.json({ success: true });
+  } catch (error) {
+    console.log('error while delting >>', error)
+  }
+});
+
 app.get("/api/influencers", async (req: Request, res: Response) => {
   try {
     console.log("📢 Fetching all influencers...");
