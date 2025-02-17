@@ -1,0 +1,5 @@
+[phases.build]
+cmds = ["npm install", "npm build"]
+
+[start]
+cmd = "npm run preview"
